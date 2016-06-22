@@ -5,7 +5,7 @@ CONTENTS OF THIS FILE
 	* Integration details
 	* Driver files information
 	* Supported sensor interface
-	* Copy right
+	* Simple Integration Example
 
 INTRODUCTION
 =============
@@ -22,13 +22,13 @@ INTRODUCTION
 VERSION
 ========
 	- Version of bme680 sensor driver is:
-		* bme680.c				- 2.0.0
-		* bme680.h				- 2.0.0
-		* bme680_calculations.c			- 2.0.0		
-		* bme680_calculations.h			- 2.0.0
-		* bme680_internal.h			- 2.0.0
-		* sensor_api_common_types.h		- 2.0.0
-		* BME680_SensorAPI_Example_Guide.pdf	- 2.0.0
+		* bme680.c                              - 2.0.0
+		* bme680.h                              - 2.0.0
+		* bme680_calculations.c                 - 2.0.0
+		* bme680_calculations.h                 - 2.0.0
+		* bme680_internal.h                     - 2.0.0
+		* sensor_api_common_types.h             - 2.0.0
+		* BME680_SensorAPI_Example_Guide.pdf    - 2.0.0
 
 INTEGRATION DETAILS
 ====================
