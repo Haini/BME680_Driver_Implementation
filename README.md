@@ -23,7 +23,7 @@ VERSION
 ========
 	- Version of bme680 sensor driver is:
 		* bme680.c                              - 2.0.0
-		* bme680.h                              - 2.0.0
+		* bme680.h                              - 2.0.1
 		* bme680_calculations.c                 - 2.0.0
 		* bme680_calculations.h                 - 2.0.0
 		* bme680_internal.h                     - 2.0.0

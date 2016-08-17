@@ -5,9 +5,9 @@
 *
 * File : bme680.h
 *
-* Date : 2016/06/10
+* Date : 2016/08/17
 *
-* Revision: 2.0.0
+* Revision: 2.0.1
 *
 * Usage: Sensor Driver for BME680 sensor
 *
@@ -70,7 +70,7 @@ BME680 Release Version format major_version.minor_version.point_version
 Example: 2.0.0 */
 #define BME680_API_REL_MAJOR_VERSION (2)
 #define BME680_API_REL_MINOR_VERSION (0)
-#define BME680_API_REL_POINT_VERSION (0)
+#define BME680_API_REL_POINT_VERSION (1)
 
 /***************************************************************************
 			Header files
@@ -335,8 +335,8 @@ enum  bme680_run_gas {
  *	parameters
  */
 enum bme680_heatr_ctrl {
-	BME680_HEATR_CTRL_DISABLE,
-	BME680_HEATR_CTRL_ENABLE
+	BME680_HEATR_CTRL_ENABLE,
+	BME680_HEATR_CTRL_DISABLE	
 };
 /*!
  *	@brief This enum holds osrs setting
