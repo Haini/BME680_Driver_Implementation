@@ -1,57 +1,86 @@
-/** \mainpage
+/**\mainpage
+*
 ****************************************************************************
-* Copyright (C) 2015 Bosch Sensortec GmbH
+* Copyright (C) 2017 - 2018 Bosch Sensortec GmbH
 *
 * File : bme680.c
 *
-* Date : 2016/06/10
+* Date: 5 May 2017
 *
-* Revision: 2.0.0
+* Revision : 2.2.0 $
 *
 * Usage: Sensor Driver for BME680 sensor
 *
 ****************************************************************************
-* Section Disclaimer
 *
-* License:
+* \section Disclaimer
 *
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
+* Common:
+* Bosch Sensortec products are developed for the consumer goods industry.
+* They may only be used within the parameters of the respective valid
+* product data sheet.  Bosch Sensortec products are provided with the
+* express understanding that there is no warranty of fitness for a
+* particular purpose.They are not fit for use in life-sustaining,
+* safety or security sensitive systems or any system or device
+* that may lead to bodily harm or property damage if the system
+* or device malfunctions. In addition,Bosch Sensortec products are
+* not fit for use in products which interact with motor vehicle systems.
+* The resale and or use of products are at the purchasers own risk and
+* his own responsibility. The examination of fitness for the intended use
+* is the sole responsibility of the Purchaser.
 *
-*   Redistributions of source code must retain the above copyright
-*   notice, this list of conditions and the following disclaimer.
+* The purchaser shall indemnify Bosch Sensortec from all third party
+* claims, including any claims for incidental, or consequential damages,
+* arising from any product use not covered by the parameters of
+* the respective valid product data sheet or not approved by
+* Bosch Sensortec and reimburse Bosch Sensortec for all costs in
+* connection with such claims.
 *
-*   Redistributions in binary form must reproduce the above copyright
-*   notice, this list of conditions and the following disclaimer in the
-*   documentation and/or other materials provided with the distribution.
+* The purchaser must monitor the market for the purchased products,
+* particularly with regard to product safety and inform Bosch Sensortec
+* without delay of all security relevant incidents.
 *
-*   Neither the name of the copyright holder nor the names of the
-*   contributors may be used to endorse or promote products derived from
-*   this software without specific prior written permission.
+* Engineering Samples are marked with an asterisk (*) or (e).
+* Samples may vary from the valid technical specifications of the product
+* series. They are therefore not intended or fit for resale to third
+* parties or for use in end products. Their sole purpose is internal
+* client testing. The testing of an engineering sample may in no way
+* replace the testing of a product series. Bosch Sensortec assumes
+* no liability for the use of engineering samples.
+* By accepting the engineering samples, the Purchaser agrees to indemnify
+* Bosch Sensortec from all claims arising from the use of engineering
+* samples.
 *
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
-* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER
-* OR CONTRIBUTORS BE LIABLE FOR ANY
-* DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
-* OR CONSEQUENTIAL DAMAGES(INCLUDING, BUT NOT LIMITED TO,
-* PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-* WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-* ANY WAY OUT OF THE USE OF THIS
-* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
+* Special:
+* This software module (hereinafter called "Software") and any information
+* on application-sheets (hereinafter called "Information") is provided
+* free of charge for the sole purpose to support your application work.
+* The Software and Information is subject to the following
+* terms and conditions:
 *
-* The information provided is believed to be accurate and reliable.
-* The copyright holder assumes no responsibility
-* for the consequences of use
-* of such information nor for any infringement of patents or
+* The Software is specifically designed for the exclusive use for
+* Bosch Sensortec products by personnel who have special experience
+* and training. Do not use this Software if you do not have the
+* proper experience or training.
+*
+* This Software package is provided `` as is `` and without any expressed
+* or implied warranties,including without limitation, the implied warranties
+* of merchantability and fitness for a particular purpose.
+*
+* Bosch Sensortec and their representatives and agents deny any liability
+* for the functional impairment
+* of this Software in terms of fitness, performance and safety.
+* Bosch Sensortec and their representatives and agents shall not be liable
+* for any direct or indirect damages or injury, except as
+* otherwise stipulated in mandatory applicable law.
+*
+* The Information provided is believed to be accurate and reliable.
+* Bosch Sensortec assumes no responsibility for the consequences of use
+* of such Information nor for any infringement of patents or
 * other rights of third parties which may result from its use.
 * No license is granted by implication or otherwise under any patent or
-* patent rights of the copyright holder.
+* patent rights of Bosch. Specifications mentioned in the Information are
+* subject to change without notice.
 **************************************************************************/
 /*! \file bme680.c
     \brief BME680 Sensor Driver Support source File */
@@ -164,7 +193,7 @@ enum bme680_return_type bme680_init(struct bme680_t *bme680)
 {
 	/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
-	u8 data_u8 = BME680_INIT_VALUE;
+	u8 data_u8 = 0;
 	/* assign the pointer*/
 	if (BME680_SPI_INTERFACE == bme680->interface) {
 		/*SPI address 0x45*/
@@ -214,13 +243,13 @@ static enum bme680_return_type bme680_get_calib_param(struct bme680_t *bme680)
 	/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 	/* array of data holding the calibration values*/
-	u8 v_data_u8 = BME680_INIT_VALUE;
+	u8 v_data_u8 = 0;
 	u8 a_data_u8[BME680_CALIB_PARAM_SIZE];
-	u8 index = BME680_INIT_VALUE;
+	u8 index = 0;
 
 
 	for (; index < BME680_CALIB_PARAM_SIZE; index++)
-		a_data_u8[index] = BME680_INIT_VALUE;
+		a_data_u8[index] = 0;
 
 	/* check the bme680 structure pointer as NULL*/
 	if (BME680_NULL_PTR == bme680) {
@@ -531,20 +560,20 @@ enum bme680_return_type bme680_get_uncomp_data(
 	/* used to return the communication result*/
 
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
-	u8 index = BME680_INIT_VALUE;
+	u8 index = 0;
 	u8 a_data_u8[BME680_LEN_ALL_FIELD_SIZE];
 	struct bme680_uncomp_field_data temp_sensor_data[BME680_THREE];
 
 	#ifdef BME680_SPECIFIC_FIELD_DATA_READ_ENABLED
 
 	/*Array to store the new_data status of all 3 fields*/
-	u8 new_data[BME680_THREE] = {BME680_INIT_VALUE,	BME680_INIT_VALUE,
-					BME680_INIT_VALUE};
+	u8 new_data[BME680_THREE] = {0,	0,
+					0};
 	#endif
 	/*clear the the latest, recent and old field index*/
-	bme680->latest_field_index = BME680_INIT_VALUE;
-	bme680->recent_field_index = BME680_INIT_VALUE;
-	bme680->old_field_index = BME680_INIT_VALUE;
+	bme680->latest_field_index = 0;
+	bme680->recent_field_index = 0;
+	bme680->old_field_index = 0;
 
 	if ((field_count < BME680_PRESENT_DATA_FIELD
 		|| field_count > BME680_ALL_DATA_FIELD)
@@ -653,7 +682,7 @@ enum bme680_return_type bme680_get_uncomp_data(
 						bme680);
 		if (BME680_FORCED_MODE != bme680->last_set_mode) {
 
-			for (index = BME680_INIT_VALUE; index <
+			for (index = 0; index <
 				BME680_ALL_DATA_FIELD; index++)
 				temp_sensor_data[index] =
 					*(uncomp_data + index);
@@ -767,10 +796,10 @@ u8 field_index, u8 *a_data_u8, struct bme680_t *bme680)
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 	/* local buffer length is 5 and it's the maximum */
 	u8 temp_data_u8[BME680_THREE];
-	u8 count = BME680_INIT_VALUE;
+	u8 count = 0;
 
-	for (count = BME680_INIT_VALUE; count < BME680_THREE; count++)
-		temp_data_u8[count] = BME680_INIT_VALUE;
+	for (count = 0; count < BME680_THREE; count++)
+		temp_data_u8[count] = 0;
 
 		/*read uncompensated Temperature of field 0*/
 	if (BME680_FIELD_INDEX0 == field_index) {
@@ -783,7 +812,7 @@ u8 field_index, u8 *a_data_u8, struct bme680_t *bme680)
 						BME680_TEMPERATURE_DATA_LEN);
 		/*Assign data to the reserved index
 		5,6 & 7 of the input buffer*/
-		for (count = BME680_INIT_VALUE;
+		for (count = 0;
 		count < BME680_TEMPERATURE_DATA_LEN; count++)
 			a_data_u8[5 + count] = temp_data_u8[count];
 
@@ -795,7 +824,7 @@ u8 field_index, u8 *a_data_u8, struct bme680_t *bme680)
 						BME680_TEMPERATURE_DATA_LEN);
 		/*Assign data to the reserved index
 		10,11 & 12 of the input buffer*/
-		for (count = BME680_INIT_VALUE;
+		for (count = 0;
 		count < BME680_TEMPERATURE_DATA_LEN; count++)
 			a_data_u8[10 + count] = temp_data_u8[count];
 
@@ -811,7 +840,7 @@ u8 field_index, u8 *a_data_u8, struct bme680_t *bme680)
 						BME680_TEMPERATURE_DATA_LEN);
 			/*Assign data to the reserved index
 			22,23 & 24 of the input buffer*/
-			for (count = BME680_INIT_VALUE;
+			for (count = 0;
 			count < BME680_TEMPERATURE_DATA_LEN; count++)
 				a_data_u8[22 + count] = temp_data_u8[count];
 
@@ -824,7 +853,7 @@ u8 field_index, u8 *a_data_u8, struct bme680_t *bme680)
 						BME680_TEMPERATURE_DATA_LEN);
 			/*Assign data to the reserved index
 			27,28 & 29 of the input buffer*/
-			for (count = BME680_INIT_VALUE;
+			for (count = 0;
 				count < BME680_TEMPERATURE_DATA_LEN; count++)
 				a_data_u8[27 + count] = temp_data_u8[count];
 
@@ -840,7 +869,7 @@ u8 field_index, u8 *a_data_u8, struct bme680_t *bme680)
 						BME680_TEMPERATURE_DATA_LEN);
 			/*Assign data to the reserved index
 			39,40 & 41 of the input buffer*/
-			for (count = BME680_INIT_VALUE;
+			for (count = 0;
 				count < BME680_TEMPERATURE_DATA_LEN; count++)
 				a_data_u8[39 + count] = temp_data_u8[count];
 
@@ -853,7 +882,7 @@ u8 field_index, u8 *a_data_u8, struct bme680_t *bme680)
 						BME680_TEMPERATURE_DATA_LEN);
 			/*Assign data to the reserved index
 			44,45 & 46 of the input buffer*/
-			for (count = BME680_INIT_VALUE;
+			for (count = 0;
 				count < BME680_TEMPERATURE_DATA_LEN; count++)
 				a_data_u8[44 + count] = temp_data_u8[count];
 
@@ -884,10 +913,10 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 	/* local buffer length is 5 and it's the maximum */
 	u8 temp_data_u8[BME680_THREE];
-	u8 count = BME680_INIT_VALUE;
+	u8 count = 0;
 
-	for (count = BME680_INIT_VALUE; count < BME680_THREE; count++)
-		temp_data_u8[count] = BME680_INIT_VALUE;
+	for (count = 0; count < BME680_THREE; count++)
+		temp_data_u8[count] = 0;
 
 	/*read uncompensated Pressure of field 0*/
 	if (BME680_FIELD_INDEX0 == field_index) {
@@ -900,7 +929,7 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
 				BME680_PRESSURE_DATA_LEN);
 		/*Assign data to the reserved index
 		2,3 & 4 of the input buffer*/
-		for (count = BME680_INIT_VALUE;
+		for (count = 0;
 			count < BME680_PRESSURE_DATA_LEN; count++)
 				a_data_u8[2 + count] = temp_data_u8[count];
 
@@ -918,7 +947,7 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
 			/*Assign data to the
 			reserved index
 			19,20 & 21 of the input buffer*/
-			for (count = BME680_INIT_VALUE;
+			for (count = 0;
 				count <	BME680_PRESSURE_DATA_LEN; count++)
 				a_data_u8[19 + count] =	temp_data_u8[count];
 
@@ -936,7 +965,7 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
 			/*Assign data to the reserved
 			index 36,37 & 38 of the input
 			buffer*/
-			for (count = BME680_INIT_VALUE;
+			for (count = 0;
 			count <	BME680_PRESSURE_DATA_LEN; count++)
 				a_data_u8[36 + count] =	temp_data_u8[count];
 
@@ -967,10 +996,10 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 	/* local buffer length is 5 and it's the maximum */
 	u8 temp_data_u8[BME680_TWO];
-	u8 count = BME680_INIT_VALUE;
+	u8 count = 0;
 
-	for (count = BME680_INIT_VALUE; count < BME680_TWO; count++)
-		temp_data_u8[count] = BME680_INIT_VALUE;
+	for (count = 0; count < BME680_TWO; count++)
+		temp_data_u8[count] = 0;
 	/*read uncompensated Humidity of field 0*/
 	if (BME680_FIELD_INDEX0 == field_index) {
 		/*read the 2 byte of H data form 0x25*/
@@ -982,7 +1011,7 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
 						BME680_HUMIDITY_DATA_LEN);
 		/*Assign data to the reserved index
 		8 & 9 of the input buffer*/
-		for (count = BME680_INIT_VALUE;
+		for (count = 0;
 			count < BME680_HUMIDITY_DATA_LEN; count++)
 				a_data_u8[8 + count] = temp_data_u8[count];
 
@@ -998,7 +1027,7 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
 						BME680_HUMIDITY_DATA_LEN);
 			/*Assign data to the reserved index
 			25 & 26 of the input buffer*/
-			for (count = BME680_INIT_VALUE;
+			for (count = 0;
 				count < BME680_HUMIDITY_DATA_LEN; count++)
 				a_data_u8[25 + count] = temp_data_u8[count];
 
@@ -1014,7 +1043,7 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
 						BME680_HUMIDITY_DATA_LEN);
 			/*Assign data to the reserved index
 			42 & 43 of the input buffer*/
-			for (count = BME680_INIT_VALUE;
+			for (count = 0;
 				count < BME680_HUMIDITY_DATA_LEN; count++)
 				a_data_u8[42 + count] = temp_data_u8[count];
 
@@ -1045,10 +1074,10 @@ enum bme680_return_type bme680_Gas_field_specific_uncomp_read(
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 	/* local buffer length is 5 and it's the maximum */
 	u8 temp_data_u8[BME680_TWO];
-	u8 count = BME680_INIT_VALUE;
+	u8 count = 0;
 
-	for (count = BME680_INIT_VALUE; count < BME680_TWO; count++)
-		temp_data_u8[count] = BME680_INIT_VALUE;
+	for (count = 0; count < BME680_TWO; count++)
+		temp_data_u8[count] = 0;
 
 	/*read uncompensated Gas of field 0*/
 	if (BME680_FIELD_INDEX0 == field_index) {
@@ -1061,7 +1090,7 @@ enum bme680_return_type bme680_Gas_field_specific_uncomp_read(
 							BME680_GAS_DATA_LEN);
 		/*Assign data to the reserved index
 			13,14 of the input buffer*/
-		for (count = BME680_INIT_VALUE;
+		for (count = 0;
 			count < BME680_GAS_DATA_LEN; count++)
 			a_data_u8[13 + count] = temp_data_u8[count];
 
@@ -1077,7 +1106,7 @@ enum bme680_return_type bme680_Gas_field_specific_uncomp_read(
 						BME680_GAS_DATA_LEN);
 			/*Assign data to the reserved index
 			 30,31 of the input buffer*/
-			for (count = BME680_INIT_VALUE;
+			for (count = 0;
 				count < BME680_GAS_DATA_LEN; count++)
 				a_data_u8[30 + count] = temp_data_u8[count];
 
@@ -1093,7 +1122,7 @@ enum bme680_return_type bme680_Gas_field_specific_uncomp_read(
 						BME680_GAS_DATA_LEN);
 			/*Assign data to the reserved index
 			47,48 of the input buffer*/
-			for (count = BME680_INIT_VALUE;
+			for (count = 0;
 				count < BME680_GAS_DATA_LEN; count++)
 				a_data_u8[47 + count] =	temp_data_u8[count];
 
@@ -1131,7 +1160,7 @@ enum bme680_return_type bme680_Gas_field_specific_uncomp_read(
 enum bme680_return_type bme680_get_power_mode(u8 *power_mode_u8,
 	struct bme680_t *bme680)
 {
-	u8 data_u8 = BME680_INIT_VALUE;
+	u8 data_u8 = 0;
 	/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 	/* check the bme680 is NULL pointer */
@@ -1181,7 +1210,7 @@ enum bme680_return_type bme680_get_power_mode(u8 *power_mode_u8,
 enum bme680_return_type bme680_set_power_mode(u8 power_mode_u8,
 	struct bme680_t *bme680)
 {
-	u8 data_u8 = BME680_INIT_VALUE;
+	u8 data_u8 = 0;
 	/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 	/* check the bme680 is NULL pointer */
@@ -1260,7 +1289,7 @@ enum bme680_return_type bme680_set_sensor_config(
 
 		for (index = 0; index < (BME680_SENS_CONF_LEN * 2) - 2;
 			index++)
-			data_u8[index] = BME680_INIT_VALUE;
+			data_u8[index] = 0;
 		com_status = (enum bme680_return_type)bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_SENSOR_CONFIG,
@@ -1376,7 +1405,7 @@ enum bme680_return_type bme680_get_sensor_config(
 	if (BME680_COMM_RES_OK == com_status) {
 
 		for (index = 0; index < BME680_SENS_CONF_LEN ; index++)
-			data_u8[index] = BME680_INIT_VALUE;
+			data_u8[index] = 0;
 
 		com_status = (enum bme680_return_type)
 						bme680->bme680_bus_read(
@@ -1438,7 +1467,7 @@ enum bme680_return_type bme680_get_sensor_config(
 
 /*!
  *	@brief This function is used for setting gas heater configuration
- *	of the sensor from register 50 to 6E address
+ *	of the sensor from register 5A to 6E address
  *
  *  @param heatr_conf : structure pointer of Heater configuration
  *	structure
@@ -1447,8 +1476,6 @@ enum bme680_return_type bme680_get_sensor_config(
  *
  *	@note reference input values from user are below
  *
- *  heatr_idacv	- initial heater current for
- *	target heater temperature(optional)
  *	heater_temp	- target temperature (200 to 400 deg cls)
  *	heatr_dur	- heater duration ( 1 to 4032 ms)
  *	heatr_dur_shared - wait time for parallel mode
@@ -1489,14 +1516,14 @@ enum bme680_return_type bme680_set_gas_heater_config(
 		com_status = bme680_get_power_mode(&power_mode, bme680);
 		for (index = 0; index < heatr_conf->profile_cnt;
 		index++) {
-			data_u8[index] = heatr_conf->heatr_idacv[index];
+
 		#ifdef FIXED_POINT_COMPENSATION
-			data_u8[index + 10] =
+			data_u8[index] =
 				bme680_convert_temperature_to_resistance_int32(
 					heatr_conf->heater_temp[index],
 					25, bme680);
 		#else
-			data_u8[index + 10] =
+			data_u8[index] =
 				bme680_convert_temperature_to_resistance_double(
 					heatr_conf->heater_temp[index],
 					25, bme680);
@@ -1504,7 +1531,7 @@ enum bme680_return_type bme680_set_gas_heater_config(
 			if (power_mode != BME680_PARALLEL_MODE)
 				bme680_scale_to_multiplication_factor(
 					&heatr_conf->heatr_dur[index]);
-			data_u8[index + 20] = heatr_conf->heatr_dur[index];
+			data_u8[index + 10] = heatr_conf->heatr_dur[index];
 
 		}
 		if (BME680_PARALLEL_MODE == power_mode) {
@@ -1513,7 +1540,7 @@ enum bme680_return_type bme680_set_gas_heater_config(
 				BME680_GAS_WAIT_STEP_SIZE;
 			bme680_scale_to_multiplication_factor(
 				&heatr_conf->heatr_dur_shared);
-			data_u8[30] = heatr_conf->heatr_dur_shared;
+			data_u8[20] = heatr_conf->heatr_dur_shared;
 
 		}
 #ifndef	__KERNEL__
@@ -1602,7 +1629,7 @@ static void bme680_buffer_restruct_burst_write(u8 arr[], u8 reg_addr,
 #endif
 /*!
  *	@brief This function is used to read the sensor heater
- *	configuration from register 50 to 6E address
+ *	configuration from register 5A to 6E address
  *
  *	@param heatr_conf : structure pointer of Heater
  *	configuration structure
@@ -1611,8 +1638,6 @@ static void bme680_buffer_restruct_burst_write(u8 arr[], u8 reg_addr,
  *
  *	@note reference output values from the sensor are below
  *
- *  heatr_idacv	- initial heater current for
- *	target heater temperature(optional)
  *	heater_temp	- target temperature (200 to 400 deg cls)
  *	heatr_dur	- heater duration ( 1 to 4032 ms)
  *	heatr_dur_shared - wait time for parallel mode
@@ -1651,11 +1676,11 @@ enum bme680_return_type bme680_get_gas_heater_config(
 	if (BME680_COMM_RES_OK == com_status) {
 
 		for (index = 0; index < BME680_SENS_HEATR_CONF_LEN; index++)
-				data_u8[index] = BME680_INIT_VALUE;
+				data_u8[index] = 0;
 
 			com_status = (enum bme680_return_type)
 				bme680->bme680_bus_read(bme680->dev_addr,
-						0x50,
+						BME680_ADDR_SENS_CONF_START,
 						data_u8,
 						BME680_SENS_HEATR_CONF_LEN);
 		if (BME680_COMM_RES_OK == com_status) {
@@ -1668,18 +1693,16 @@ enum bme680_return_type bme680_get_gas_heater_config(
 			(heatr_conf->profile_cnt == 0)) {
 				for (index = 0; index <	BME680_PROFILE_MAX;
 					index++) {
-					heatr_conf->heatr_idacv[index] =
-						data_u8[index];
 					heatr_conf->heater_temp[index] =
-						data_u8[index + 10];
+						data_u8[index];
 					heatr_conf->heatr_dur[index] =
-						data_u8[index + 20];
+						data_u8[index + 10];
 				}
 			} else {
 					com_status = BME680_PROFILE_CNT_ERROR;
 			}
 
-			heatr_conf->heatr_dur_shared = data_u8[30];
+			heatr_conf->heatr_dur_shared = data_u8[20];
 		}
 	}
 	}
@@ -1907,7 +1930,7 @@ for (index = 0; ((index < field_count) &&
 static enum bme680_return_type bme680_set_memory_page(u8 memory_page_u8,
 	struct bme680_t *bme680)
 {
-	u8 data_u8 = BME680_INIT_VALUE;
+	u8 data_u8 = 0;
 	/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 	/* check the bme680 is NULL pointer */
@@ -1963,8 +1986,8 @@ static enum bme680_return_type bme680_set_memory_page(u8 memory_page_u8,
 void bme680_align_uncomp_data(u8 *a_data_u8, u8 field_count, u8 sensor_type,
 	struct bme680_uncomp_field_data *uncomp_data,	struct bme680_t *bme680)
 {
-	u8 offset = BME680_INIT_VALUE;
-	s8 index = BME680_INIT_VALUE;
+	u8 offset = 0;
+	s8 index = 0;
 
 	if (BME680_FORCED_MODE != bme680->last_set_mode)
 		field_count = BME680_ALL_DATA_FIELD;
@@ -2036,16 +2059,16 @@ void bme680_get_latest_recent_old_field_index(
 {
 	/* Array holding the filed0, field1 and field2
 	temperature, pressure, humidity and gas data*/
-	u8 latest = BME680_INIT_VALUE;
-	u8 recent = BME680_INIT_VALUE;
-	u8 old = BME680_INIT_VALUE;
-	u8 index = BME680_INIT_VALUE;
-	u8 large_index = BME680_INIT_VALUE;
+	u8 latest = 0;
+	u8 recent = 0;
+	u8 old = 0;
+	u8 index = 0;
+	u8 large_index = 0;
 	u8 max_index = 2;
 	u8 meas_index[3];
 
-	for (index = BME680_INIT_VALUE; index < 3; index++)
-		meas_index[index] = BME680_INIT_VALUE;
+	for (index = 0; index < 3; index++)
+		meas_index[index] = 0;
 
 	index = 0;
 	for (index = 0; index < 3; index++)
@@ -2114,9 +2137,9 @@ enum bme680_return_type bme680_read_status_fields(
 	/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 
-	u8 count = BME680_INIT_VALUE;
+	u8 count = 0;
 	/* local buffer length is 5 and it's the maximum */
-	u8 temp_data_u8[2] = {BME680_INIT_VALUE, BME680_INIT_VALUE};
+	u8 temp_data_u8[2] = {0, 0};
 
 
 		/*read the 2 byte of status form 0x1D - field_0*/
@@ -2127,7 +2150,7 @@ enum bme680_return_type bme680_read_status_fields(
 				BME680_STATUS_DATA_LEN);
 		/* Assign data to the reserved
 			index of the input buffer */
-		for (count = BME680_INIT_VALUE;
+		for (count = 0;
 			count < BME680_STATUS_DATA_LEN; count++)
 			a_data_u8[0 + count] = temp_data_u8[count];
 
@@ -2147,7 +2170,7 @@ enum bme680_return_type bme680_read_status_fields(
 			BME680_STATUS_DATA_LEN);
 			/*Assign data to the reserved index
 			17 and 18 of the input buffer*/
-			for (count = BME680_INIT_VALUE;
+			for (count = 0;
 			count < BME680_STATUS_DATA_LEN; count++)
 				a_data_u8[17 + count] = temp_data_u8[count];
 
@@ -2166,7 +2189,7 @@ enum bme680_return_type bme680_read_status_fields(
 						BME680_STATUS_DATA_LEN);
 			/*Assign data to the reserved index
 			34 and 35 of the input buffer*/
-			for (count = BME680_INIT_VALUE;
+			for (count = 0;
 			count < BME680_STATUS_DATA_LEN; count++)
 				a_data_u8[34 + count] = temp_data_u8[count];
 
@@ -2203,14 +2226,14 @@ void bme680_copy_ordered_sensor_field_data(
 	struct bme680_uncomp_field_data *temp_sensor_data)
 {
 
-	u8 index = BME680_INIT_VALUE;
+	u8 index = 0;
 #ifndef BME680_SPECIFIC_FIELD_DATA_READ_ENABLED
 	 sensor_type = BME680_ALL;
 #endif
 
 #ifdef BME680_SPECIFIC_FIELD_DATA_READ_ENABLED
 	/* copy status of all field */
-	for (index = BME680_INIT_VALUE; index < BME680_MAX_FIELD_INDEX;
+	for (index = 0; index < BME680_MAX_FIELD_INDEX;
 		index++) {
 		if (index == BME680_FIELD_INDEX0)
 			sensor_data[index].status =
@@ -2228,7 +2251,7 @@ void bme680_copy_ordered_sensor_field_data(
 		/* copy temperature data
 			by default for Pressure and Humidity
 		*/
-		for (index = BME680_INIT_VALUE;	index < BME680_MAX_FIELD_INDEX;
+		for (index = 0;	index < BME680_MAX_FIELD_INDEX;
 			index++) {
 			if (index == BME680_FIELD_INDEX0)
 				sensor_data[index].temp_adcv =
@@ -2244,7 +2267,7 @@ void bme680_copy_ordered_sensor_field_data(
 		switch (sensor_type) {
 		case BME680_PRESSURE:
 		/* copying only pressure data */
-		for (index = BME680_INIT_VALUE; index < BME680_MAX_FIELD_INDEX;
+		for (index = 0; index < BME680_MAX_FIELD_INDEX;
 		index++) {
 			if (index == BME680_FIELD_INDEX0)
 				sensor_data[index].pres_adcv =
@@ -2260,7 +2283,7 @@ void bme680_copy_ordered_sensor_field_data(
 		break;
 		case BME680_HUMIDITY:
 		/* copying only humidity data */
-		for (index = BME680_INIT_VALUE; index < BME680_MAX_FIELD_INDEX;
+		for (index = 0; index < BME680_MAX_FIELD_INDEX;
 		index++) {
 			if (index == BME680_FIELD_INDEX0)
 				sensor_data[index].hum_adcv =
@@ -2277,7 +2300,7 @@ void bme680_copy_ordered_sensor_field_data(
 		}
 	} else if (BME680_GAS == sensor_type) {
 			/* copying only gas data */
-		for (index = BME680_INIT_VALUE; index < BME680_MAX_FIELD_INDEX;
+		for (index = 0; index < BME680_MAX_FIELD_INDEX;
 		index++) {
 			if (index == BME680_FIELD_INDEX0)
 				sensor_data[index].gas_res_adcv =
@@ -2292,7 +2315,7 @@ void bme680_copy_ordered_sensor_field_data(
 			}
 	} else if (BME680_ALL == sensor_type) {
 		/* copying T,P,G,& H data */
-		for (index = BME680_INIT_VALUE; index < BME680_MAX_FIELD_INDEX;
+		for (index = 0; index < BME680_MAX_FIELD_INDEX;
 		index++) {
 			if (index == BME680_FIELD_INDEX0)
 				*(sensor_data + index) =
@@ -2308,7 +2331,7 @@ void bme680_copy_ordered_sensor_field_data(
 	#else
 	if (BME680_ALL == sensor_type) {
 					/* copying T,P,G,& H data */
-		for (index = BME680_INIT_VALUE; index < BME680_MAX_FIELD_INDEX;
+		for (index = 0; index < BME680_MAX_FIELD_INDEX;
 		index++) {
 			if (index == BME680_FIELD_INDEX0)
 				*(sensor_data + index) =
@@ -2336,8 +2359,8 @@ void bme680_copy_ordered_sensor_field_data(
 static u8 bme680_find_largest_index(u8 *meas_index)
 {
 
-	u8 index = BME680_INIT_VALUE;
-	u8 temp_index = BME680_INIT_VALUE;
+	u8 index = 0;
+	u8 temp_index = 0;
 
 	if (*(meas_index + index) > *(meas_index + (index + 2))) {
 		if (*(meas_index + index) > *(meas_index + (index + 1)))

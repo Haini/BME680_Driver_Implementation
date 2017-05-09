@@ -1,56 +1,86 @@
-/*
+/**
+*
 ****************************************************************************
-* Copyright (C) 2015 Bosch Sensortec GmbH
+* Copyright (C) 2017 - 2018 Bosch Sensortec GmbH
 *
 * File : bme680_calculations.c
 *
-* Date : 2016/06/10
+* Date: 5 May 2017
 *
-* Revision: 2.0.0
+* Revision : 2.2.0 $
 *
 * Usage: Sensor Driver for BME680 sensor
 *
 ****************************************************************************
-* \Section Disclaimer
-* License:
 *
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
+* \section Disclaimer
 *
-*   Redistributions of source code must retain the above copyright
-*   notice, this list of conditions and the following disclaimer.
+* Common:
+* Bosch Sensortec products are developed for the consumer goods industry.
+* They may only be used within the parameters of the respective valid
+* product data sheet.  Bosch Sensortec products are provided with the
+* express understanding that there is no warranty of fitness for a
+* particular purpose.They are not fit for use in life-sustaining,
+* safety or security sensitive systems or any system or device
+* that may lead to bodily harm or property damage if the system
+* or device malfunctions. In addition,Bosch Sensortec products are
+* not fit for use in products which interact with motor vehicle systems.
+* The resale and or use of products are at the purchasers own risk and
+* his own responsibility. The examination of fitness for the intended use
+* is the sole responsibility of the Purchaser.
 *
-*   Redistributions in binary form must reproduce the above copyright
-*   notice, this list of conditions and the following disclaimer in the
-*   documentation and/or other materials provided with the distribution.
+* The purchaser shall indemnify Bosch Sensortec from all third party
+* claims, including any claims for incidental, or consequential damages,
+* arising from any product use not covered by the parameters of
+* the respective valid product data sheet or not approved by
+* Bosch Sensortec and reimburse Bosch Sensortec for all costs in
+* connection with such claims.
 *
-*   Neither the name of the copyright holder nor the names of the
-*   contributors may be used to endorse or promote products derived from
-*   this software without specific prior written permission.
+* The purchaser must monitor the market for the purchased products,
+* particularly with regard to product safety and inform Bosch Sensortec
+* without delay of all security relevant incidents.
 *
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
-* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER
-* OR CONTRIBUTORS BE LIABLE FOR ANY
-* DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
-* OR CONSEQUENTIAL DAMAGES(INCLUDING, BUT NOT LIMITED TO,
-* PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-* WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-* ANY WAY OUT OF THE USE OF THIS
-* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
+* Engineering Samples are marked with an asterisk (*) or (e).
+* Samples may vary from the valid technical specifications of the product
+* series. They are therefore not intended or fit for resale to third
+* parties or for use in end products. Their sole purpose is internal
+* client testing. The testing of an engineering sample may in no way
+* replace the testing of a product series. Bosch Sensortec assumes
+* no liability for the use of engineering samples.
+* By accepting the engineering samples, the Purchaser agrees to indemnify
+* Bosch Sensortec from all claims arising from the use of engineering
+* samples.
 *
-* The information provided is believed to be accurate and reliable.
-* The copyright holder assumes no responsibility
-* for the consequences of use
-* of such information nor for any infringement of patents or
+* Special:
+* This software module (hereinafter called "Software") and any information
+* on application-sheets (hereinafter called "Information") is provided
+* free of charge for the sole purpose to support your application work.
+* The Software and Information is subject to the following
+* terms and conditions:
+*
+* The Software is specifically designed for the exclusive use for
+* Bosch Sensortec products by personnel who have special experience
+* and training. Do not use this Software if you do not have the
+* proper experience or training.
+*
+* This Software package is provided `` as is `` and without any expressed
+* or implied warranties,including without limitation, the implied warranties
+* of merchantability and fitness for a particular purpose.
+*
+* Bosch Sensortec and their representatives and agents deny any liability
+* for the functional impairment
+* of this Software in terms of fitness, performance and safety.
+* Bosch Sensortec and their representatives and agents shall not be liable
+* for any direct or indirect damages or injury, except as
+* otherwise stipulated in mandatory applicable law.
+*
+* The Information provided is believed to be accurate and reliable.
+* Bosch Sensortec assumes no responsibility for the consequences of use
+* of such Information nor for any infringement of patents or
 * other rights of third parties which may result from its use.
 * No license is granted by implication or otherwise under any patent or
-* patent rights of the copyright holder.
+* patent rights of Bosch. Specifications mentioned in the Information are
+* subject to change without notice.
 **************************************************************************/
 /*! \file bme680_calculations.c
     \brief BME680 Sensor Driver calculation source File */
@@ -93,10 +123,10 @@
 s32 bme680_calculate_gas_int32(u16 gas_adc_u16, u8 gas_range_u8,
 	struct bme680_t *bme680)
 {
-	s8 range_switching_error_val = BME680_INIT_VALUE;
-	s64 var1 = BME680_INIT_VALUE;
-	s64 var2 = BME680_INIT_VALUE;
-	s32 gas_res = BME680_INIT_VALUE;
+	s8 range_switching_error_val = 0;
+	s64 var1 = 0;
+	s64 var2 = 0;
+	s32 gas_res = 0;
 
 
 
@@ -148,10 +178,10 @@ s32 bme680_calculate_gas_int32(u16 gas_adc_u16, u8 gas_range_u8,
 s32 bme680_compensate_temperature_int32(u32 v_uncomp_temperature_u32,
 	struct bme680_t *bme680)
 {
-	s32 var1 = BME680_INIT_VALUE;
-	s32 var2 = BME680_INIT_VALUE;
-	s32 var3 = BME680_INIT_VALUE;
-	s32 temp_comp = BME680_INIT_VALUE;
+	s32 var1 = 0;
+	s32 var2 = 0;
+	s32 var3 = 0;
+	s32 temp_comp = 0;
 
 	var1 = ((s32)v_uncomp_temperature_u32 >> 3) -
 		((s32)bme680->cal_param.par_T1 << 1);
@@ -186,14 +216,14 @@ s32 bme680_compensate_temperature_int32(u32 v_uncomp_temperature_u32,
 s32 bme680_compensate_humidity_int32(u32 v_uncomp_humidity_u32,
 	struct bme680_t *bme680)
 {
-	s32 temp_scaled = BME680_INIT_VALUE;
-	s32 var1	= BME680_INIT_VALUE;
-	s32 var2	= BME680_INIT_VALUE;
-	s32 var3	= BME680_INIT_VALUE;
-	s32 var4	= BME680_INIT_VALUE;
-	s32 var5	= BME680_INIT_VALUE;
-	s32 var6	= BME680_INIT_VALUE;
-	s32 humidity_comp = BME680_INIT_VALUE;
+	s32 temp_scaled = 0;
+	s32 var1	= 0;
+	s32 var2	= 0;
+	s32 var3	= 0;
+	s32 var4	= 0;
+	s32 var5	= 0;
+	s32 var6	= 0;
+	s32 humidity_comp = 0;
 
 	temp_scaled = (((s32)bme680->cal_param.t_fine * 5) + 128) >> 8;
 	var1 = (s32)v_uncomp_humidity_u32 -
@@ -246,11 +276,11 @@ s32 bme680_compensate_humidity_int32(u32 v_uncomp_humidity_u32,
 s32 bme680_compensate_pressure_int32(u32 v_uncomp_pressure_u32,
 	struct bme680_t *bme680)
 {
-	s32 var1 = BME680_INIT_VALUE;
-	s32 var2 = BME680_INIT_VALUE;
-	s32 var3 = BME680_INIT_VALUE;
-	s32 var4 = BME680_INIT_VALUE;
-	s32 pressure_comp = BME680_INIT_VALUE;
+	s32 var1 = 0;
+	s32 var2 = 0;
+	s32 var3 = 0;
+	s32 var4 = 0;
+	s32 pressure_comp = 0;
 
 	var1 = (((s32)bme680->cal_param.t_fine) >> 1) - 64000;
 	var2 = ((((var1 >> 2) * (var1 >> 2)) >> 11) *
@@ -298,13 +328,13 @@ s32 bme680_compensate_pressure_int32(u32 v_uncomp_pressure_u32,
 u8 bme680_convert_temperature_to_resistance_int32(u16 heater_temp_u16,
 	s16 ambient_temp_s16, struct bme680_t *bme680)
 {
-	s32 var1 = BME680_INIT_VALUE;
-	s32 var2 = BME680_INIT_VALUE;
-	s32 var3 = BME680_INIT_VALUE;
-	s32 var4 = BME680_INIT_VALUE;
-	s32 var5 = BME680_INIT_VALUE;
-	s32 res_heat_x100 = BME680_INIT_VALUE;
-	u8 res_heat = BME680_INIT_VALUE;
+	s32 var1 = 0;
+	s32 var2 = 0;
+	s32 var3 = 0;
+	s32 var4 = 0;
+	s32 var5 = 0;
+	s32 res_heat_x100 = 0;
+	u8 res_heat = 0;
 
 
 	if ((heater_temp_u16 >= BME680_GAS_PROFILE_TEMPERATURE_MIN)
@@ -343,8 +373,8 @@ u8 bme680_convert_temperature_to_resistance_int32(u16 heater_temp_u16,
 u16 bme680_compensate_H_int32_sixteen_bit_output(u32 v_uncomp_humidity_u32,
 	struct bme680_t *bme680)
 {
-	u32 v_x1_u32 = BME680_INIT_VALUE;
-	u16 v_x2_u32 = BME680_INIT_VALUE;
+	u32 v_x1_u32 = 0;
+	u16 v_x2_u32 = 0;
 
 	v_x1_u32 = (u32) bme680_compensate_humidity_int32(
 	v_uncomp_humidity_u32, bme680);
@@ -368,7 +398,7 @@ u16 bme680_compensate_H_int32_sixteen_bit_output(u32 v_uncomp_humidity_u32,
 s16 bme680_compensate_T_int32_sixteen_bit_output(u32 v_uncomp_temperature_u32,
 	struct bme680_t *bme680)
 {
-	s16 temperature = BME680_INIT_VALUE;
+	s16 temperature = 0;
 
 	bme680_compensate_temperature_int32(v_uncomp_temperature_u32, bme680);
 	temperature  = (s16)((((
@@ -394,7 +424,7 @@ s16 bme680_compensate_T_int32_sixteen_bit_output(u32 v_uncomp_temperature_u32,
 u32 bme680_compensate_P_int32_twentyfour_bit_output(u32 v_uncomp_pressure_u32,
 	struct bme680_t *bme680)
 {
-	u32 pressure = BME680_INIT_VALUE;
+	u32 pressure = 0;
 
 	pressure = (u32)bme680_compensate_pressure_int32(
 		v_uncomp_pressure_u32, bme680);
@@ -420,7 +450,7 @@ u32 bme680_compensate_P_int32_twentyfour_bit_output(u32 v_uncomp_pressure_u32,
 double bme680_compensate_gas_double(u16 gas_adc_u16, u8 gas_range_u8,
 	struct bme680_t *bme680)
 {
-	double gas_res_d = BME680_INIT_VALUE;
+	double gas_res_d = 0;
 
 
 #ifdef HEATER_C1_ENABLE
@@ -431,10 +461,10 @@ double bme680_compensate_gas_double(u16 gas_adc_u16, u8 gas_range_u8,
 	const double lookup_k2_range[BME680_GAS_RANGE_RL_LENGTH] = {
 	0.0, 0.0, 0.0, 0.0, 0.1, 0.7, 0.0, -0.8,
 	-0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-	s8 range_switching_error_val = BME680_INIT_VALUE;
-	double var1 = BME680_INIT_VALUE;
-	double var2 = BME680_INIT_VALUE;
-	double var3 = BME680_INIT_VALUE;
+	s8 range_switching_error_val = 0;
+	double var1 = 0;
+	double var2 = 0;
+	double var3 = 0;
 
 
 
@@ -476,11 +506,11 @@ double bme680_compensate_gas_double(u16 gas_adc_u16, u8 gas_range_u8,
 double bme680_compensate_humidity_double(u16 uncom_humidity_u16,
 	double comp_temperature, struct bme680_t *bme680)
 {
-	double humidity_comp = BME680_INIT_VALUE;
-	double var1 = BME680_INIT_VALUE;
-	double var2 = BME680_INIT_VALUE;
-	double var3 = BME680_INIT_VALUE;
-	double var4 = BME680_INIT_VALUE;
+	double humidity_comp = 0;
+	double var1 = 0;
+	double var2 = 0;
+	double var3 = 0;
+	double var4 = 0;
 
 	var1 = (double)((double)uncom_humidity_u16) - (((double)
 	bme680->cal_param.par_H1 * 16.0) +
@@ -522,10 +552,10 @@ double bme680_compensate_humidity_double(u16 uncom_humidity_u16,
 double bme680_compensate_pressure_double(u32 uncom_pressure_u32,
 	struct bme680_t *bme680)
 {
-	double data1_d = BME680_INIT_VALUE;
-	double data2_d = BME680_INIT_VALUE;
-	double data3_d = BME680_INIT_VALUE;
-	double pressure_comp = BME680_INIT_VALUE;
+	double data1_d = 0;
+	double data2_d = 0;
+	double data3_d = 0;
+	double pressure_comp = 0;
 
 	data1_d = (((double)bme680->cal_param.t_fine / 2.0) - 64000.0);
 	data2_d = data1_d * data1_d * (((double)bme680->cal_param.par_P6) /
@@ -541,7 +571,7 @@ double bme680_compensate_pressure_double(u32 uncom_pressure_u32,
 		((double)bme680->cal_param.par_P1));
 	pressure_comp = (1048576.0 - ((double)uncom_pressure_u32));
 	/* Avoid exception caused by division by zero */
-	if ((int)data1_d != BME680_INIT_VALUE) {
+	if ((int)data1_d != 0) {
 		pressure_comp = (((pressure_comp - (data2_d
 			/ 4096.0)) * 6250.0) / data1_d);
 		data1_d = (((double)bme680->cal_param.par_P9) *
@@ -556,7 +586,7 @@ double bme680_compensate_pressure_double(u32 uncom_pressure_u32,
 		return pressure_comp;
 
 	} else {
-		return BME680_INIT_VALUE;
+		return 0;
 	}
 
 
@@ -577,9 +607,9 @@ double bme680_compensate_pressure_double(u32 uncom_pressure_u32,
 double bme680_compensate_temperature_double(u32 uncom_temperature_u32,
 	struct bme680_t *bme680)
 {
-	double data1_d = BME680_INIT_VALUE;
-	double data2_d = BME680_INIT_VALUE;
-	double temperature = BME680_INIT_VALUE;
+	double data1_d = 0;
+	double data2_d = 0;
+	double temperature = 0;
 	/* calculate x1 data */
 	data1_d  = ((((double)uncom_temperature_u32 / 16384.0)
 		- ((double)bme680->cal_param.par_T1 / 1024.0))
@@ -617,12 +647,12 @@ double bme680_compensate_temperature_double(u32 uncom_temperature_u32,
 double bme680_convert_temperature_to_resistance_double(u16 heater_temp_u16,
 	s16 ambient_temp_s16, struct bme680_t *bme680)
 {
-	double var1 = BME680_INIT_VALUE;
-	double var2 = BME680_INIT_VALUE;
-	double var3 = BME680_INIT_VALUE;
-	double var4 = BME680_INIT_VALUE;
-	double var5 = BME680_INIT_VALUE;
-	double res_heat = BME680_INIT_VALUE;
+	double var1 = 0;
+	double var2 = 0;
+	double var3 = 0;
+	double var4 = 0;
+	double var5 = 0;
+	double res_heat = 0;
 
 	if ((heater_temp_u16 >= BME680_GAS_PROFILE_TEMPERATURE_MIN)
 	&& (heater_temp_u16 <= BME680_GAS_PROFILE_TEMPERATURE_MAX)) {
