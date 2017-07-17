@@ -1,148 +1,239 @@
-## Table of Contents
-- [Introduction](#intro)
-- [Version](#ver)
-- [Integration details](#integration)
-- [Driver files information](#fileinfo)
-- [Supported sensor interface](#interface)
-- [Simple Integration Example](#sample)
+# BME680 sensor API
+## Introduction
+This package contains the Bosch Sensortec's BME680 gas sensor API
 
-### Introduction<a name=intro></a>
-- This package contains the Bosch Sensortec MEMS BME680 sensor driver (sensor API)
-- The sensor driver package includes below files
-    * bme680.c
-    * bme680.h
-    * bme680_calculations.c
-    * bme680_calculations.h
-    * bme680_internal.h
-    * sensor_api_common_types.h
+The sensor driver package includes bme680.h, bme680.c and bme680_defs.h files
 
-### Version<a name=ver></a>
+## Version
 File | Version | Date
 -----|---------|-----
-bme680.c | 2.2.0 | 5 May 2017
-bme680.h | 2.2.0 | 5 May 2017
-bme680_calculations.c | 2.2.0 | 5 May 2017
-bme680_calculations.h | 2.2.0 | 5 May 2017
-bme680_internal.h | 2.2.0 | 5 May 2017
-sensor_api_common_types.h | 2.2.0 | 5 May 2017
+bme680.c |  3.5.1	 | 5 Jul 2017
+bme680.h |  3.5.1	 | 5 Jul 2017
+bme680_defs.h |  3.5.1	 | 5 Jul 2017  
 
-### Integration details<a name=integration></a>
-- Integrate files bme680.c, bme680.h, bme680_calculations.c, bme680_calculations.h, bme680_internal.h and sensor_api_common_types.h into your project.    
-- Include the bme680.h file in your code like below.
+## Integration details
+* Integrate bme680.h, bme680_defs.h and bme680.c file in to your project.
+* Include the bme680.h file in your code like below.
 ``` c
 #include "bme680.h"
-```   
-- The BME680_SensorAPI_Example_Guide.pdf contains examples for API use cases.
-
-### Driver files information<a name=fileinfo></a>
-- bme680.h
-    * This header file has the constant definitions, user data types and supported sensor driver calls declarations which is required by the user.
-- bme680.c
-    * This file contains the implementation for the sensor driver APIs.
-- bme680_calculations.h
-    * This header file has the internal function declaration for the sensor calculation.
-- bme680_calculations.c
-    * This file contains the implementation of the sensor calculations for sensor driver APIs.
-- bme680_internal.h
-    * This header file has the register address definition, internal constant definitions.
-- sensor_api_common_types.h
-    * This header file has the data type definition for different compiler platform.
-
-### Supported sensor interface<a name=interface></a>
-- This BME680 sensor driver supports SPI and I2C interfaces
-
-### Simple Integration Example<a name=sample></a>
-- A simple example for BME680 is given below. 
-- Example meant for Single BME680 sensor in Force Mode with Temperature, Pressure, Humidity and Gas Enabled
-- Please refer bme680.h to refer the API calls for the integration.
-``` c
-/* include bme680 main header */
-#include "bme680.h"
-/*!
-* BME680_MAX_NO_OF_SENSOR = 2; defined in bme680.h file
-* In order to interface only one sensor over SPI, user must change the value of
-* BME680_MAX_NO_OF_SENSOR = 1
-* Test setup: It has been assumed that �BME680 sensor_0� interfaced over SPI with
-* Native chip select line
-*/
-/* BME680 sensor structure instance */
-struct bme680_t bme680_sensor_no[BME680_MAX_NO_OF_SENSOR];
-/* BME680 sensor's compensated data structure instance */
-struct bme680_comp_field_data compensate_data_sensor[BME680_MAX_NO_OF_SENSOR][3];
-/* BME680 sensor's uncompensated data structure instance */
-struct bme680_uncomp_field_data uncompensated_data_of_sensor[BME680_MAX_NO_OF_SENSOR][3];
-/* BME680 sensor's configuration structure instance */
-struct bme680_sens_conf set_conf_sensor[BME680_MAX_NO_OF_SENSOR];
-/* BME680 sensor's heater configuration structure instance */
-struct bme680_heater_conf set_heatr_conf_sensor[BME680_MAX_NO_OF_SENSOR];
-
-void main(void)
-{
-	unsigned int i = 0;
-	enum bme680_return_type com_rslt = BME680_COMM_RES_ERROR;
-	
-	/* Do BME680 sensor structure instance initialization*/
-	/* Sensor_0 interface over SPI with native chip select line */
-	/* USER defined SPI bus read function */
-	bme680_sensor_no[0].bme680_bus_read = BME680_SPI_bus_read_user;
-	/* USER defined SPI bus write function */
-	bme680_sensor_no[0].bme680_bus_write = BME680_SPI_bus_write_user;
-	/* USER defined SPI burst read function */
-	bme680_sensor_no[0].bme680_burst_read = BME680_SPI_bus_read_user;
-	/* USER defined delay function */
-	bme680_sensor_no[0].delay_msec = BME680_delay_msec_user;
-	/* Mention communication interface */
-	bme680_sensor_no[0].interface = BME680_SPI_INTERFACE;
-	
-	/* get chip id and calibration parameter */
-	com_rslt = bme680_init(&bme680_sensor_no[0]);
-	
-	/* Do Sensor initialization */
-	for (i=0;i<BME680_MAX_NO_OF_SENSOR;i++) {
-		/* Check Device-ID before next steps of sensor operations */
-		if (BME680_CHIP_ID == bme680_sensor_no[i].chip_id) {
-			/* Select sensor configuration parameters */
-			set_conf_sensor[i].heatr_ctrl = BME680_HEATR_CTRL_ENABLE;
-			set_conf_sensor[i].run_gas = BME680_RUN_GAS_ENABLE;
-			set_conf_sensor[i].nb_conv = 0x00;
-			set_conf_sensor[i].osrs_hum = BME680_OSRS_1X;
-			set_conf_sensor[i].osrs_pres = BME680_OSRS_1X;
-			set_conf_sensor[i].osrs_temp = BME680_OSRS_1X;
-			
-			/* activate sensor configuration */
-			com_rslt += bme680_set_sensor_config(&set_conf_sensor[i],
-			&bme680_sensor_no[i]);
-			
-			/* Select Heater configuration parameters */
-			set_heatr_conf_sensor[i].heater_temp[0] = 300;
-			set_heatr_conf_sensor[i].heatr_idacv[0] = 1;
-			set_heatr_conf_sensor[i].heatr_dur[0] = 137;
-			set_heatr_conf_sensor[i].profile_cnt = 1;
-			
-			/* activate heater configuration */
-			com_rslt += bme680_set_gas_heater_config(&set_heatr_conf_sensor[i],
-			&bme680_sensor_no[i]);
-			
-			/* Set power mode as forced mode */
-			com_rslt += bme680_set_power_mode(BME680_FORCED_MODE,&bme680_sensor_no[i]);
-			
-			if (BME680_COMM_RES_OK == com_rslt) {
-				/*Get the uncompensated T+P+G+H data*/
-				bme680_get_uncomp_data(uncompensated_data_of_sensor[i], 1, BME680_ALL,
-				&bme680_sensor_no[i]);
-				
-				/*Get the compensated T+P+G+H data*/
-				bme680_compensate_data(uncompensated_data_of_sensor[i],
-				compensate_data_sensor[i], 1,
-				BME680_ALL, &bme680_sensor_no[i]);
-				
-				/* put sensor into sleep mode explicitly */
-				bme680_set_power_mode(BME680_SLEEP_MODE, &bme680_sensor_no[i]);
-				
-				/* call user define delay function(duration millisecond) */
-				User_define_delay(100);
-			}
-		}
-	}
-}
 ```
+
+## File information
+* bme680_defs.h : This header file has the constants, macros and datatype declarations.
+* bme680.h : This header file contains the declarations of the sensor driver APIs.
+* bme680.c : This source file contains the definitions of the sensor driver APIs.
+
+## Supported sensor interfaces
+* SPI 4-wire
+* I2C
+
+## Usage guide
+### Initializing the sensor
+To initialize the sensor, you will first need to create a device structure. You 
+can do this by creating an instance of the structure bme680_dev. Then go on to 
+fill in the various parameters as shown below
+
+#### Example for SPI 4-Wire
+``` c
+	struct bme680_dev gas_sensor;
+
+	/* You may assign a chip select identifier to be handled later */
+	gas_sensor.dev_id = 0;
+	gas_sensor.intf = BME680_SPI_INTF;
+	gas_sensor.read = user_spi_read;
+	gas_sensor.write = user_spi_write;
+	gas_sensor.delay_ms = user_delay_ms;
+
+	int8_t rslt = BME680_OK;
+	rslt = bme680_init(&gas_sensor);
+```
+
+#### Example for I2C
+``` c
+	struct bme680_dev gas_sensor;
+
+	gas_sensor.dev_id = BME680_I2C_ADDR_PRIMARY;
+	gas_sensor.intf = BME680_I2C_INTF;
+	gas_sensor.read = user_i2c_read;
+	gas_sensor.write = user_i2c_write;
+	gas_sensor.delay_ms = user_delay_ms;
+
+	int8_t rslt = BME680_OK;
+	rslt = bme680_init(&gas_sensor);
+```
+
+### Configuring the sensor
+#### Example for configuring the sensor in forced mode
+``` c
+	uint8_t set_required_settings;
+
+	/* Set the temperature, pressure and humidity settings */
+	gas_sensor.tph_sett.os_hum = BME680_OS_2X;
+	gas_sensor.tph_sett.os_pres = BME680_OS_4X;
+	gas_sensor.tph_sett.os_temp = BME680_OS_8X;
+	gas_sensor.tph_sett.filter = BME680_FILTER_SIZE_3;
+
+	/* Set the remaining gas sensor settings and link the heating profile */
+	gas_sensor.gas_sett.run_gas = BME680_ENABLE_GAS_MEAS;
+	/* Create a ramp heat waveform in 3 steps */
+	gas_sensor.gas_sett.heatr_temp = 320; /* degree Celsius */
+	gas_sensor.gas_sett.heatr_dur = 150; /* milliseconds */
+
+	/* Select the power mode */
+	/* Must be set before writing the sensor configuration */
+	gas_sensor.power_mode = BME680_FORCED_MODE; 
+
+	/* Set the required sensor settings needed */
+	set_required_settings = BME680_OST_SEL | BME680_OSP_SEL | BME680_OSH_SEL | BME680_FILTER_SEL 
+		| BME680_GAS_SENSOR_SEL;
+		
+	/* Set the desired sensor configuration */
+	rslt = bme680_set_sensor_settings(set_required_settings,&gas_sensor);
+
+	/* Set the power mode */
+	rslt = bme680_set_sensor_mode(&gas_sensor);
+
+	/* Get the total measurement duration so as to sleep or wait till the
+	 * measurement is complete */
+	uint16_t meas_period;
+	bme680_get_profile_dur(&meas_period, &gas_sensor);
+	user_delay_ms(meas_period); /* Delay till the measurement is ready */
+```
+
+### Reading sensor data
+#### Example for reading all sensor data
+``` c
+	struct bme680_field_data data;
+	
+	while(1) 
+	{
+		rslt = bme680_get_sensor_data(&data, &gas_sensor);
+
+		printf("T: %.2f degC, P: %.2f hPa, H %.2f %%rH ", data.temperature / 100.0f,
+			data.pressure / 100.0f, data.humidity / 1000.0f );
+		/* Avoid using measurements from an unstable heating setup */
+		if(data.status & BME680_HEAT_STAB_MSK)
+			printf(", G: %d ohms", data.gas_resistance);
+		
+		printf("\r\n");
+	}
+```
+
+### Templates for function pointers
+``` c
+
+void user_delay_ms(uint32_t period)
+{
+    /*
+     * Return control or wait,
+     * for a period amount of milliseconds
+     */
+}
+
+int8_t user_spi_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len)
+{
+    int8_t rslt = 0; /* Return 0 for Success, non-zero for failure */
+
+    /*
+     * The parameter dev_id can be used as a variable to select which Chip Select pin has
+     * to be set low to activate the relevant device on the SPI bus
+     */
+
+    /*
+     * Data on the bus should be like
+     * |----------------+---------------------+-------------|
+     * | MOSI           | MISO                | Chip Select |
+     * |----------------+---------------------|-------------|
+     * | (don't care)   | (don't care)        | HIGH        |
+     * | (reg_addr)     | (don't care)        | LOW         |
+     * | (don't care)   | (reg_data[0])       | LOW         |
+     * | (....)         | (....)              | LOW         |
+     * | (don't care)   | (reg_data[len - 1]) | LOW         |
+     * | (don't care)   | (don't care)        | HIGH        |
+     * |----------------+---------------------|-------------|
+     */
+
+    return rslt;
+}
+
+int8_t user_spi_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len)
+{
+    int8_t rslt = 0; /* Return 0 for Success, non-zero for failure */
+
+    /*
+     * The parameter dev_id can be used as a variable to select which Chip Select pin has
+     * to be set low to activate the relevant device on the SPI bus
+     */
+
+    /*
+     * Data on the bus should be like
+     * |---------------------+--------------+-------------|
+     * | MOSI                | MISO         | Chip Select |
+     * |---------------------+--------------|-------------|
+     * | (don't care)        | (don't care) | HIGH        |
+     * | (reg_addr)          | (don't care) | LOW         |
+     * | (reg_data[0])       | (don't care) | LOW         |
+     * | (....)              | (....)       | LOW         |
+     * | (reg_data[len - 1]) | (don't care) | LOW         |
+     * | (don't care)        | (don't care) | HIGH        |
+     * |---------------------+--------------|-------------|
+     */
+
+    return rslt;
+}
+
+int8_t user_i2c_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len)
+{
+    int8_t rslt = 0; /* Return 0 for Success, non-zero for failure */
+
+    /*
+     * The parameter dev_id can be used as a variable to store the I2C address of the device
+     */
+
+    /*
+     * Data on the bus should be like
+     * |------------+---------------------|
+     * | I2C action | Data                |
+     * |------------+---------------------|
+     * | Start      | -                   |
+     * | Write      | (reg_addr)          |
+     * | Stop       | -                   |
+     * | Start      | -                   |
+     * | Read       | (reg_data[0])       |
+     * | Read       | (....)              |
+     * | Read       | (reg_data[len - 1]) |
+     * | Stop       | -                   |
+     * |------------+---------------------|
+     */
+
+    return rslt;
+}
+
+int8_t user_i2c_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len)
+{
+    int8_t rslt = 0; /* Return 0 for Success, non-zero for failure */
+
+    /*
+     * The parameter dev_id can be used as a variable to store the I2C address of the device
+     */
+
+    /*
+     * Data on the bus should be like
+     * |------------+---------------------|
+     * | I2C action | Data                |
+     * |------------+---------------------|
+     * | Start      | -                   |
+     * | Write      | (reg_addr)          |
+     * | Write      | (reg_data[0])       |
+     * | Write      | (....)              |
+     * | Write      | (reg_data[len - 1]) |
+     * | Stop       | -                   |
+     * |------------+---------------------|
+     */
+
+    return rslt;
+}
+
+```
+
+## Copyright (C) 2017 - 2018 Bosch Sensortec GmbH
