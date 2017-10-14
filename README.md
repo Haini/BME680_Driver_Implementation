@@ -245,3 +245,4 @@ I using the [Raspbian Netinstall](https://github.com/debian-pi/raspbian-ua-netin
 
 I am also going to use the I2C / SPI Library from http://www.airspayce.com/mikem/bcm2835/ . I am planning on using the I2C capabilities of the sensor and Raspberry for this.
 
+Due to the fact that the used kernel is compiled with `CONFIG_STRICT_DEVMEM=y` the bcm2835 Library I wanted to use is not going to work (can't access `/dev/mem`). Instead I am trying to implement it with the `i2c-dev.h` and the `/dev/i2c-1` file operations. 
