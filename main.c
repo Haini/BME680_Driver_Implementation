@@ -2,14 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <signal.h>
 
 #include <unistd.h>				//Needed for I2C port
 #include <fcntl.h>				//Needed for I2C port
 #include <sys/ioctl.h>			//Needed for I2C port
 #include <linux/i2c-dev.h>		//Needed for I2C port
-
+#include <time.h>
 
 #include "bme680.h"
+#include "bsec_interface.h"
 
 
 #define MODE_READ 0
@@ -20,18 +22,20 @@
 int file_i2c;
 int length;
 unsigned char buffer[60] = {0};
-
+int notTerminated = 1;
 
 /* Function Constructors. */
 int8_t user_i2c_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len);
 int8_t user_i2c_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len);
 void user_delay_ms(uint32_t period);
-
+void intHandler(int tmp);
 
 /* Function Implementations. */
 int main (int argc, const char** argv)
 {
-     printf("Running ... \n");
+
+	signal(SIGINT, intHandler);
+	printf("Running ... \n");
     
 	//----- OPEN THE I2C BUS -----
 	char *filename = (char*)"/dev/i2c-1";
@@ -43,7 +47,7 @@ int main (int argc, const char** argv)
 	}    
     
     //---- AQUIRE BUS ACCESS AT ADDRESS ----
-	int addr = BME680_I2C_ADDR_PRIMARY;          //<<<<<The I2C address of the slave
+	int addr = BME680_I2C_ADDR_SECONDARY;          //<<<<<The I2C address of the slave
 	if (ioctl(file_i2c, I2C_SLAVE, addr) < 0)
 	{
 		printf("Failed to acquire bus access and/or talk to slave.\n");
@@ -102,19 +106,47 @@ int main (int argc, const char** argv)
     /* Read the sensor data. */
     struct bme680_field_data data;
 	
-	while(1) 
+	/* File writing */	
+	FILE *f = fopen("data.txt", "a");
+	time_t now;
+	if (f == NULL)
+	{
+	    printf("Error opening file!\n");
+	    exit(1);
+	}
+
+	while(notTerminated) 
 	{
 		rslt = bme680_get_sensor_data(&data, &gas_sensor);
-
-		printf("T: %.2f degC, P: %.2f hPa, H %.2f %%rH ", data.temperature / 100.0f,
+		now = time(NULL);
+		struct tm tm = *localtime(&now);	
+		printf("Time: %d:%d:%d, T: %.2f degC, P: %.2f hPa, H %.2f %%rH ", tm.tm_hour, tm.tm_min, tm.tm_sec, data.temperature / 100.0f,
 			data.pressure / 100.0f, data.humidity / 1000.0f );
+
+		//fprintf(f, "T: %.2f degC, P: %.2f hPa, H %.2f %%rH \r\n", data.temperature / 100.0f,
+	        //				data.pressure / 100.0f, data.humidity / 1000.0f );
+		fprintf(f, "%d:%d:%d;%.2f;%.2f;%.2f;", tm.tm_hour, tm.tm_min, tm.tm_sec, data.temperature / 100.0f, data.pressure / 100.0f, 
+					data.humidity / 1000.0f);
 		/* Avoid using measurements from an unstable heating setup */
-		if(data.status & BME680_HEAT_STAB_MSK)
+		if(data.status & BME680_HEAT_STAB_MSK) {
 			printf(", G: %d ohms", data.gas_resistance);
+			fprintf(f, "%d", data.gas_resistance);
+		}
 		
 		printf("\r\n");
+		fprintf(f, "\r\n");
+		fflush(f);
+		sleep(5);
+		rslt = bme680_set_sensor_mode(&gas_sensor);
+		user_delay_ms(meas_period + 5*1000);
 	}
+	fclose(f);
     return 0;
+}
+
+void intHandler(int tmp)
+{
+	notTerminated = 0;
 }
 
 int8_t user_i2c_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len)
@@ -122,19 +154,21 @@ int8_t user_i2c_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16
     int8_t rslt = 0; /* Return 0 for Success, non-zero for failure */
     
     /* Step 1: Write Register Address to read to slave. */
+	uint8_t tmp[1];
+	tmp[0] = reg_addr;
 	length = 1;			//<<< Number of bytes to write 
-	if (write(file_i2c, &reg_addr, length) != length)		
+	if (write(file_i2c, tmp, length) != length)		
 	{
-        rslt = 1;
+        	rslt = 1;
 		//ERROR HANDLING: i2c transaction failed
-		printf("Failed to read from the i2c bus.\n");
+		perror("Failed to write register number to the i2c bus.\n");
 	}
 
     /* Step 2: Read Register Data for len */
     if (read(file_i2c, reg_data, len) != len)
     {
         rslt = 1;
-        printf("Failed to write to i2c bus.\n");
+        perror("Failed to write data to i2c bus.\n");
     }
     /*
      * The parameter dev_id can be used as a variable to store the I2C address of the device
@@ -161,24 +195,37 @@ int8_t user_i2c_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16
 
 int8_t user_i2c_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len)
 {
-    int8_t rslt = 0; /* Return 0 for Success, non-zero for failure */
-    length = 1;
+    	int8_t rslt = 0; /* Return 0 for Success, non-zero for failure */
+    	length = 1;
+	uint8_t i = 1;
+	uint8_t tmp[16];
+	tmp[0] = reg_addr;
 
-    /* Step 1: Write the register address. */
-	if (write(file_i2c, &reg_addr, length) != length)		
-	{
-        rslt = 1;
-		//ERROR HANDLING: i2c transaction failed
-		printf("Failed to read from the i2c bus.\n");
+	for (i = 1; i <= len; i++) {
+		tmp[i] = reg_data[i-1];	
 	}
-    
-    /* Step 2: Write the command to the slave. */
-	if (write(file_i2c, reg_data, len) != len)		
-	{
-        rslt = 1;
-		//ERROR HANDLING: i2c transaction failed
-		printf("Failed to read from the i2c bus.\n");
+
+	if (write(file_i2c, tmp, len+1) != (len+1)) {
+		perror("Could not write data to i2c BUS");
+		rslt = 1;
+		exit(1);
 	}
+
+//    /* Step 1: Write the register address. */
+//	if (write(file_i2c, &reg_addr, length) != length)		
+//	{
+//        rslt = 1;
+//		//ERROR HANDLING: i2c transaction failed
+//		printf("Failed to read from the i2c bus.\n");
+//	}
+//    
+//    /* Step 2: Write the command to the slave. */
+//	if (write(file_i2c, reg_data, len) != len)		
+//	{
+//        rslt = 1;
+//		//ERROR HANDLING: i2c transaction failed
+//		printf("Failed to read from the i2c bus.\n");
+//	}
 
     /*
      * The parameter dev_id can be used as a variable to store the I2C address of the device
@@ -203,7 +250,8 @@ int8_t user_i2c_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint1
 
 void user_delay_ms(uint32_t period)
 {
-    /* Standard I2C clock is 1kHz, T=1/f. */
+    /* sleep waits for seconds, so we need to convert
+	ms to s. */
     sleep(period/1000);
     /*
      * Return control or wait,
