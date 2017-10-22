@@ -103,12 +103,14 @@ int main (int argc, const char** argv)
 	bme680_get_profile_dur(&meas_period, &gas_sensor);
 	user_delay_ms(meas_period); /* Delay till the measurement is ready */
     
-    /* Read the sensor data. */
-    struct bme680_field_data data;
+    	/* Read the sensor data. */
+    	struct bme680_field_data data;
 	
 	/* File writing */	
-	FILE *f = fopen("data.txt", "a");
+	FILE *f = fopen("/var/www/html/data.txt", "a");
+	struct tm tm;
 	time_t now;
+	int64_t gas_resistance = 10000;	/*<< Init a resistance value. */
 	if (f == NULL)
 	{
 	    printf("Error opening file!\n");
@@ -119,34 +121,47 @@ int main (int argc, const char** argv)
 	{
 		rslt = bme680_get_sensor_data(&data, &gas_sensor);
 		now = time(NULL);
-		struct tm tm = *localtime(&now);	
-		printf("Time: %d:%d:%d, T: %.2f degC, P: %.2f hPa, H %.2f %%rH ", tm.tm_hour, tm.tm_min, tm.tm_sec, data.temperature / 100.0f,
-			data.pressure / 100.0f, data.humidity / 1000.0f );
+		tm = *localtime(&now);	
+			
+		/* Skip loop if no new data is available. */
+		if (!(data.status & BME680_NEW_DATA_MSK)) {
+			continue;
+		}
 
-		//fprintf(f, "T: %.2f degC, P: %.2f hPa, H %.2f %%rH \r\n", data.temperature / 100.0f,
-	        //				data.pressure / 100.0f, data.humidity / 1000.0f );
-		fprintf(f, "%d:%d:%d;%.2f;%.2f;%.2f;", tm.tm_hour, tm.tm_min, tm.tm_sec, data.temperature / 100.0f, data.pressure / 100.0f, 
-					data.humidity / 1000.0f);
+		/* For debugging print to terminal. */
+		printf("Time:%d-%02d-%02d %02d:%02d:%02d, T: %.2f degC, P: %.2f hPa, H %.2f %%rH ",
+			tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, 
+			data.temperature / 100.0f, data.pressure / 100.0f, data.humidity / 1000.0f );
+		
+		/* Print to file for usage. */
+		fprintf(f, "%d-%02d-%02d %02d:%02d:%02d;%.2f;%.2f;%.2f;", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday,
+			tm.tm_hour, tm.tm_min, tm.tm_sec, 
+			data.temperature / 100.0f, data.pressure / 100.0f, data.humidity / 1000.0f);
+
 		/* Avoid using measurements from an unstable heating setup */
 		if(data.status & BME680_HEAT_STAB_MSK) {
 			printf(", G: %d ohms", data.gas_resistance);
 			fprintf(f, "%d", data.gas_resistance);
+			gas_resistance = data.gas_resistance;	/*<< Save away in case of unstable measurement.*/
+		} else {
+			fprintf(f, "%d", gas_resistance);	/*<< Who likes empty cells anyways? */
 		}
 		
 		printf("\r\n");
 		fprintf(f, "\r\n");
 		fflush(f);
-		sleep(5);
+		sleep(27);	/*<< ~30 second intervals of measurements. */
 		rslt = bme680_set_sensor_mode(&gas_sensor);
-		user_delay_ms(meas_period + 5*1000);
+		user_delay_ms(meas_period + 2*1000);
 	}
 	fclose(f);
-    return 0;
+    	return 0;
 }
 
 void intHandler(int tmp)
 {
 	notTerminated = 0;
+	/* TODO: Close the filepointer here, before that make it public... */
 }
 
 int8_t user_i2c_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len)
